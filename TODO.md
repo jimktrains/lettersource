@@ -1,4 +1,5 @@
 # v1
+* Allow only the session that created a letter to edit it
 * Allow Selection of found legislatures
 * Better formatting for print interface 
 * PDF download (stretch goal?)
