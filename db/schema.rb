@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170204223909) do
+ActiveRecord::Schema.define(version: 20170205040001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,9 @@ ActiveRecord::Schema.define(version: 20170204223909) do
     t.index ["letter_id"], name: "index_categories_letters_on_letter_id", using: :btree
   end
 
+# Could not dump table "congress_critters" because of following StandardError
+#   Unknown type 'cc_type' for column 'position'
+
   create_table "letters", force: :cascade do |t|
     t.text     "title",         null: false
     t.text     "body",          null: false
@@ -42,6 +45,19 @@ ActiveRecord::Schema.define(version: 20170204223909) do
     t.datetime "updated_at",    null: false
     t.text     "rendered_body"
     t.index "((setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(body, ''::text)), 'B'::\"char\")))", name: "letters_body_ftidx", using: :gin
+  end
+
+  create_table "statefips", force: :cascade do |t|
+    t.text "state"
+    t.text "stusab"
+    t.text "state_name"
+    t.text "statens"
+    t.index ["stusab"], name: "index_statefips_on_stusab", using: :btree
+  end
+
+  create_table "zip2cd", primary_key: "zcta5", id: :text, force: :cascade do |t|
+    t.text "state", array: true
+    t.text "cd",    array: true
   end
 
 end

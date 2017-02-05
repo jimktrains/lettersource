@@ -1,0 +1,2 @@
+class CongressCritter < ApplicationRecord
+end
