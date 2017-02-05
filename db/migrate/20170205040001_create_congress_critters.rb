@@ -48,26 +48,6 @@ class CreateCongressCritters < ActiveRecord::Migration[5.0]
       t.text :statens
     end
 
-    require 'csv'    
-
-    csv_text = File.read('db/legislators.csv')
-    csv = CSV.parse(csv_text, :headers => true)
-    csv.each do |row|
-      CongressCritter.create!(row.to_hash)
-    end
-
-    # http://www2.census.gov/geo/docs/reference/state.txt
-    csv_text = File.read('db/state.txt')
-    csv = CSV.parse(csv_text, :headers => true, :col_sep => "|", :header_converters=> :downcase)
-    csv.each do |row|
-      Statefips.create!(row.to_hash)
-    end
-
-    execute "DELETE FROM congress_critters WHERE in_office = '0'";
-    execute "UPDATE congress_critters SET position = 'SEN' WHERE senate_class IS NOT NULL"
-    execute "UPDATE congress_critters SET position = 'REP' WHERE senate_class IS NULL"
-    execute "UPDATE congress_critters SET state_fips = (SELECT state FROM statefips WHERE congress_critters.state = statefips.stusab)"
-    execute "UPDATE congress_critters SET cd_fips = state_fips || lpad(district::text, 2, '0') WHERE position = 'REP'"
   end
 
   def down

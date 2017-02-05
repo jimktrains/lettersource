@@ -18,11 +18,11 @@ ActiveRecord::Schema.define(version: 20170205051655) do
   enable_extension "pg_trgm"
 
   create_table "categories", force: :cascade do |t|
-    t.text     "name",                         null: false
-    t.boolean  "public",       default: false, null: false
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.ltree    "path",                         null: false
+    t.text     "name",         null: false
+    t.boolean  "public"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.ltree    "path",         null: false
     t.text     "display_name"
     t.index "name gin_trgm_ops", name: "categories_name_trgm", using: :gin
     t.index ["path"], name: "index_categories_on_path", using: :gist

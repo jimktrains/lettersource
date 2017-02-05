@@ -91,3 +91,33 @@ end
 
 handle_topic(topics)
 
+conn = ActiveRecord::Base.connection.raw_connection
+
+filename = "db/zip2cds.sql"
+File.foreach(filename).with_index do |line, line_num|
+  puts line_num if line_num % 100 == 0
+  conn.query line
+end
+
+
+require 'csv'
+
+
+csv_text = File.read('db/legislators.csv')
+csv = CSV.parse(csv_text, :headers => true)
+csv.each do |row|
+  CongressCritter.create!(row.to_hash)
+end
+
+# http://www2.census.gov/geo/docs/reference/state.txt
+csv_text = File.read('db/state.txt')
+csv = CSV.parse(csv_text, :headers => true, :col_sep => "|", :header_converters=> :downcase)
+csv.each do |row|
+  Statefips.create!(row.to_hash)
+end
+
+conn.query "DELETE FROM congress_critters WHERE in_office = '0'";
+conn.query "UPDATE congress_critters SET position = 'SEN' WHERE senate_class IS NOT NULL"
+conn.query "UPDATE congress_critters SET position = 'REP' WHERE senate_class IS NULL"
+conn.query "UPDATE congress_critters SET state_fips = (SELECT state FROM statefips WHERE congress_critters.state = statefips.stusab)"
+conn.query "UPDATE congress_critters SET cd_fips = state_fips || lpad(district::text, 2, '0') WHERE position = 'REP'"

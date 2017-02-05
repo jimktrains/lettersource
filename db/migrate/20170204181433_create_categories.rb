@@ -5,7 +5,7 @@ class CreateCategories < ActiveRecord::Migration[5.0]
 
     create_table :categories do |t|
       t.text :name, null: false, limit: 50
-      t.boolean :public, null: false, default: false
+      t.boolean :public
       t.timestamps
     end
     add_column :categories, :path, :ltree, null: false, unique: true

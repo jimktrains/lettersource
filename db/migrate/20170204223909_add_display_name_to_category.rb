@@ -3,6 +3,6 @@ class AddDisplayNameToCategory < ActiveRecord::Migration[5.0]
     add_column :categories, :display_name, :text
   end
   def down
-    drop_column :categories, :display_name
+    remove_column :categories, :display_name
   end
 end

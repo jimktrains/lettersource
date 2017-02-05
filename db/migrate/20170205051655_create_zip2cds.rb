@@ -20,10 +20,15 @@ class CreateZip2cds < ActiveRecord::Migration[5.0]
   # group by
   #   zipcode
   def up
-		filename = "db/zip2cds.sql"
-		File.foreach(filename).with_index do |line, line_num|
-			execute line
-		end
+
+		execute <<EOS
+CREATE TABLE zip2cds (
+    zipcode character varying(5),
+    states character varying[],
+    cds character varying[]
+);
+EOS
+
   end
 
   def down
