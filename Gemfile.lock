@@ -38,6 +38,8 @@ GEM
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
     arel (7.1.4)
     autoprefixer-rails (6.7.2)
       execjs
@@ -55,6 +57,10 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.4)
     debug_inspector (0.0.2)
+    despamilator (2.1.4)
+      domainatrix
+    domainatrix (0.0.11)
+      addressable
     erubis (2.7.0)
     execjs (2.7.0)
     ffi (1.9.17)
@@ -94,6 +100,7 @@ GEM
       activerecord (>= 4.2)
       activesupport (>= 4.2)
       arel (>= 6)
+    public_suffix (2.0.5)
     puma (3.7.0)
     rack (2.0.1)
     rack-test (0.6.3)
@@ -167,6 +174,7 @@ DEPENDENCIES
   bootstrap (~> 4.0.0.alpha3)
   byebug
   coffee-rails (~> 4.2)
+  despamilator
   jbuilder (~> 2.5)
   jquery-rails
   kramdown

@@ -54,5 +54,6 @@ gem "kramdown"
 gem 'pg_search'
 gem 'pg_ltree', '1.1.3'
 gem 'bootstrap', '~> 4.0.0.alpha3'
+gem 'despamilator'
 
 ruby "2.3.3"

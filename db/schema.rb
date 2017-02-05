@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205150740) do
+ActiveRecord::Schema.define(version: 20170205223057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,11 +39,14 @@ ActiveRecord::Schema.define(version: 20170205150740) do
 #   Unknown type 'cc_type' for column 'position'
 
   create_table "letters", force: :cascade do |t|
-    t.text     "title",         null: false
-    t.text     "body",          null: false
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.text     "title",                      null: false
+    t.text     "body",                       null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
     t.text     "rendered_body"
+    t.decimal  "spam_score"
+    t.text     "spam_filters",  default: [],              array: true
+    t.boolean  "public"
     t.index "((setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(body, ''::text)), 'B'::\"char\")))", name: "letters_body_ftidx", using: :gin
   end
 

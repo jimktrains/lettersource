@@ -1,6 +1,8 @@
+require 'despamilator'
 require 'kramdown' 
 class Letter < ApplicationRecord
   has_and_belongs_to_many :categories
+  default_scope { where(public: true) }
 
   include PgSearch
   # The index must include the weightings and fields
@@ -46,5 +48,17 @@ class Letter < ApplicationRecord
     doc = Kramdown::Document.new(body)
     rendered_body, warnings = LettersHelper::HTMLConverterWithoutLinks.convert(doc.root)
     return rendered_body
+  end
+
+  def save
+    dspam = Despamilator.new(body)
+    
+    self.spam_score = dspam.score
+    self.spam_filters = []
+    
+    dspam.matches.each { |k| self.spam_filters <<  k[:filter].class.to_s + " @ " + k[:score].to_s }
+
+    self.public =  dspam.score < 1
+    super
   end
 end

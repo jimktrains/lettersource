@@ -1,0 +1,17 @@
+  <form method="POST" action="<%= format_letter_path %>">
+    <p>Select the legilators you'd like to address this letter to.</p>
+    <% for critter in @critters %>
+    <label for="critter-<%=critter.govtrack_id%>">
+    <input type="checkbox" value="<%=critter.govtrack_id%>" name="critters[]" id="critter-<%=critter.govtrack_id%>">
+    <%=critter.name%> (<%=critter.parentetical%>)
+    </label>
+    <% end %>
+    <input type="hidden" id="name" name="name" value="<%=@sender[:name]%>">
+    <input type="hidden" id="street" name="street_address" value="<%=@sender[:street_address]%>">
+    <input type="hidden" id="city" name="city" value="<%=@sender[:city]%>">
+    <input type="hidden" id="state" name="state" value="<%=@sender[:state]%>">
+    <input type="hidden" id="zip" name="zip" value="<%=@sender[:zip]%>">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <input type="submit" value="Address Letter">
+  </form>
+

@@ -136,12 +136,18 @@ class LettersController < ApplicationController
 
   private
     def can_edit
+      if can_edit_id @letter.id then
+        return true unless edit_too_old @letter
+        # if we can't edit, we might as well clear it from the session
+        session[:letters].delete_if {|l| l == @letter.id }
+      end
+      return false
+    end
+
+    def can_edit_id(id)
+      id = id.to_i
       unless session[:letters].nil? then
-        if session[:letters].include? @letter.id then
-          return true unless edit_too_old @letter
-          # if we can't edit, we might as well clear it from the session
-          session[:letters].delete_if {|l| l == @letter.id }
-        end
+        return session[:letters].include? id
       end
       return false
     end
@@ -166,7 +172,11 @@ class LettersController < ApplicationController
 
     # Use callbacks to share common setup or constraints between actions.
     def set_letter
-      @letter = Letter.eager_load(:categories).find(params[:id])
+      @letter = Letter.eager_load(:categories)
+      if can_edit_id params[:id] then
+        @letter = @letter.unscoped
+      end
+      @letter = @letter.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
