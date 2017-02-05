@@ -94,9 +94,14 @@ handle_topic(topics)
 conn = ActiveRecord::Base.connection.raw_connection
 
 filename = "db/zip2cds.sql"
+q = ""
 File.foreach(filename).with_index do |line, line_num|
-  puts line_num if line_num % 100 == 0
-  conn.query line
+  if line_num % 100 == 0
+    puts line_num
+    conn.query q
+    q = ""
+  end
+  q += line
 end
 
 
