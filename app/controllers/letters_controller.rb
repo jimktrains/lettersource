@@ -1,7 +1,7 @@
 require "kramdown"
 
 class LettersController < ApplicationController
-  before_action :set_letter, only: [:show, :edit, :update, :destroy, :duplicate]
+  before_action :set_letter, only: [:show, :edit, :update, :duplicate, :format]
 
   # GET /letters
   # GET /letters.json
@@ -25,6 +25,28 @@ class LettersController < ApplicationController
     # @TODO move rendering into `Letter#body=`
     doc = Kramdown::Document.new(@letter.body)
     @letter.rendered_body, @warnings = LettersHelper::HTMLConverterWithoutLinks.convert(doc.root)
+
+    @sender = {
+      :name => "Sender's Name",
+      :street => "Street",
+      :city => "City",
+      :state => "State",
+      :zip => "00000"
+    }
+
+    @recipient = {
+      :name => "Sender's Name",
+      :street => "Street",
+      :city => "City",
+      :state => "State",
+      :zip => "00000"
+    }
+  end
+
+  def format
+    z = Zip2cd.where(zipcode: params[:zip])
+    require 'pp'
+    pp z
   end
 
   # GET /letters/new

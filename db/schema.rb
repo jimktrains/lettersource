@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205051655) do
+ActiveRecord::Schema.define(version: 20170205150740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,23 +47,16 @@ ActiveRecord::Schema.define(version: 20170205051655) do
     t.index "((setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(body, ''::text)), 'B'::\"char\")))", name: "letters_body_ftidx", using: :gin
   end
 
-  create_table "statefips", force: :cascade do |t|
-    t.text "state"
+  create_table "statefips", primary_key: "state", id: :text, force: :cascade do |t|
     t.text "stusab"
     t.text "state_name"
     t.text "statens"
     t.index ["stusab"], name: "index_statefips_on_stusab", using: :btree
   end
 
-  create_table "zip2cd", primary_key: "zcta5", id: :text, force: :cascade do |t|
-    t.text "state", array: true
-    t.text "cd",    array: true
-  end
-
-  create_table "zip2cds", id: false, force: :cascade do |t|
-    t.string "zipcode", limit: 5
-    t.string "states",            array: true
-    t.string "cds",               array: true
+  create_table "zip2cds", primary_key: "zipcode", id: :string, limit: 5, force: :cascade do |t|
+    t.string "states", array: true
+    t.string "cds",    array: true
   end
 
 end

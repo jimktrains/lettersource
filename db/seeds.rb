@@ -80,8 +80,15 @@ def handle_topic(topics, prefix=nil, display_prefix=nil)
   topics.each do |k,v|
     this_prefix = prefix + clean_path_part(k)
     this_display_name = display_prefix  + k
-    if 0 == Category.where(path: this_prefix).length then
+    cat = Category.where(path: this_prefix).first
+    if cat.path.nil? then
       Category.create(name: k, path: this_prefix, display_name: this_display_name, public: true)
+    else
+      cat.name = k
+      cat.path = this_prefix
+      cat.display_name = this_display_name
+      cat.public = true
+      cat.save
     end
     if v.is_a? Hash then
       handle_topic(v, this_prefix, this_display_name)
@@ -89,37 +96,75 @@ def handle_topic(topics, prefix=nil, display_prefix=nil)
   end
 end
 
+Rails.logger.debug("importing topics")
+puts "importing topics"
 handle_topic(topics)
 
 conn = ActiveRecord::Base.connection.raw_connection
 
-filename = "db/zip2cds.sql"
-q = ""
-File.foreach(filename).with_index do |line, line_num|
-  if line_num % 100 == 0
-    puts line_num
-    conn.query q
-    q = ""
+Rails.logger.debug("importing zips")
+puts "importing zips"
+begin
+  filename = "db/zip2cds.sql"
+  q = ""
+  File.foreach(filename).with_index do |line, line_num|
+    if line_num % 100 == 0
+      puts line_num
+      conn.query q
+      q = ""
+    end
+    q += line
   end
-  q += line
+rescue PG::UniqueViolation => e
+  puts e
+  Rails.logger.error(e)
+  Rails.logger.error("Must have alrady imported zips?")
 end
 
 
 require 'csv'
 
 
+Rails.logger.debug("importing legislators")
+puts "importing legislators"
+
 csv_text = File.read('db/legislators.csv')
 csv = CSV.parse(csv_text, :headers => true)
+not_imported = 0
 csv.each do |row|
-  CongressCritter.create!(row.to_hash)
+  begin
+    CongressCritter.create!(row.to_hash)
+  rescue
+    not_imported += 1
+  end
 end
 
+unless not_imported == 0 then
+  puts not_imported.to_s + " Errors importing legislators"
+  Rails.logger.error(not_imported.to_s + " Errors importing legislators")
+end
+
+Rails.logger.debug("importing states")
+puts "importing states"
 # http://www2.census.gov/geo/docs/reference/state.txt
+not_imported = 0
 csv_text = File.read('db/state.txt')
 csv = CSV.parse(csv_text, :headers => true, :col_sep => "|", :header_converters=> :downcase)
 csv.each do |row|
-  Statefips.create!(row.to_hash)
+  begin
+    Statefips.create!(row.to_hash)
+  rescue
+    not_imported += 1
+  end
 end
+unless not_imported == 0 then
+  puts not_imported.to_s + " Errors importing states"
+  Rails.logger.error(not_imported.to_s + " Errors importing states")
+end
+
+
+Rails.logger.debug("cleaing congress critters")
+puts "cleaning congress critters"
 
 conn.query "DELETE FROM congress_critters WHERE in_office = '0'";
 conn.query "UPDATE congress_critters SET position = 'SEN' WHERE senate_class IS NOT NULL"

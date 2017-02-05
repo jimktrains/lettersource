@@ -1,0 +1,38 @@
+<div id="formatted-letter">
+  <div class="recipient-address">
+    <p class="h-card">
+      <span class="p-name"><%= recipient[:name] %></span>
+      <span class="p-street-address"><%= recipient[:street_address]%></span>
+      <span class="p-locality"><%= recipient[:city] %></span>
+      <span class="p-region"><%=recipient[:state] %></span>
+      <span class="p-postal-code"><%= recipient[:zip] %></span>
+    </p>
+  </div>
+  <div class="sender-address">
+    <p class="h-card">
+      <span class="p-name"><%= sender[:name] %></span>
+      <span class="p-street-address"><%= sender[:street_address]%></span>
+      <span class="p-locality"><%= sender[:city] %></span>
+      <span class="p-region"><%=sender[:state] %></span>
+      <span class="p-postal-code"><%= sender[:zip] %></span>
+    </p>
+  </div>
+
+  <p class="regarding">
+    Re: <%= letter.title %>
+  </p>
+
+  <p>
+    <div class="letter-body">
+      <% if not letter.rendered_body.nil? then %>
+      <%= letter.rendered_body.html_safe %>
+      <% end %>
+    </div>
+  </p>
+
+  <p>
+  <p>Sincerely,</p>
+  <p><%= sender[:name] %></p>
+
+  </p>
+</div>

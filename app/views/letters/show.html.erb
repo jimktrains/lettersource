@@ -1,50 +1,25 @@
 <p id="notice"><%= notice %></p>
 
 <div id="categories">
+  <ul>
   <% for category in @letter.categories %>
-    <span class="category"><%= category.display_name %></span>
+    <li class="category"><%= category.display_name %></span>
   <% end %>
+  </ul>
 </div>
 
-<div id="formatted-letter">
-<div class="recipient-address">
-	<p class="h-card">
-		<span class="p-name">Their Name</span>
-		<span class="p-street-address">Street address</span>
-		<span class="p-locality">Locality</span>
-		<span class="p-region">State</span>
-		<span class="p-postal-code">ZIP</span>
-	</p>
-</div>
-<div class="sender-address">
-	<p class="h-card">
-		<span class="p-name">Your Name</span>
-		<span class="p-street-address">Street address</span>
-		<span class="p-locality">Locality</span>
-		<span class="p-region">State</span>
-		<span class="p-postal-code">ZIP</span>
-	</p>
-</div>
-
-<p class="regarding">
-  Re: <%= @letter.title %>
-</p>
-
-<p>
-  <div class="letter-body">
-    <% if not @letter.rendered_body.nil? then %>
-    <%= @letter.rendered_body.html_safe %>
-    <% end %>
-  </div>
-</p>
-
-<p>
-<p>Sincerely,</p>
-<p>Your Name</p>
-
-</p>
-</div>
 
 <%= link_to 'Edit', edit_letter_path(@letter) %> |
 <%= link_to 'Back', letters_path %>
 <%= button_to 'Duplicate & Edit',  duplicate_letter_path(@letter) %>
+
+<p>
+  <form method="POST" action="<%= format_letter_path %>">
+    <label for="search-term">Find your Congresspeople and format the letter: </label>
+    <input type="text" id="zip" name="zip">
+    <input type="submit" value="Search">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  </form>
+</p>
+
+<%= render 'formatted', letter: @letter, sender: @sender, recipient: @recipient %>

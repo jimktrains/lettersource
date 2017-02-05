@@ -23,6 +23,9 @@ class CreateCongressCritters < ActiveRecord::Migration[5.0]
       t.text :bioguide_id 
       t.text :votesmart_id 
       t.text :fec_id 
+
+      # So, the :primary => true wasn't the way to set a primary key :(
+      # see 20170205145032_add_pk_to_congress_critters.rb
       t.text :govtrack_id, :primary => true
       t.text :crp_id 
       t.text :twitter_id 
@@ -42,6 +45,8 @@ class CreateCongressCritters < ActiveRecord::Migration[5.0]
     add_column :congress_critters, :position, "cc_type"
 
     create_table :statefips do |t|
+      # So, the :primary => true wasn't the way to set a primary key :(
+      # see db/migrate/20170205150740_add_pk_to_statefips.rb
       t.text :state, :primary => true 
       t.text :stusab, :index => true
       t.text :state_name
