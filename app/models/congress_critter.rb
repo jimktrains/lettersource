@@ -28,10 +28,16 @@ EOS
   def recipient_array
     return {
       :name => name,
-      :street => congress_office,
+      :street_address => congress_office,
       :city => "Washington",
       :state => "DC",
       :zip => "20515"
     }
+  end
+
+  def parentetical
+    a = position + " " + state
+    a += "-" + district  if position == "REP"
+    return a
   end
 end

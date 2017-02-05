@@ -22,7 +22,7 @@ class LettersController < ApplicationController
 
     @sender = {
       :name => "Sender's Name",
-      :street => "Street",
+      :street_address => "Street",
       :city => "City",
       :state => "State",
       :zip => "00000"
@@ -30,7 +30,7 @@ class LettersController < ApplicationController
 
     @recipient = {
       :name => "Sender's Name",
-      :street => "Street",
+      :street_address => "Street",
       :city => "City",
       :state => "State",
       :zip => "00000"
@@ -39,16 +39,26 @@ class LettersController < ApplicationController
     @can_edit = can_edit
   end
 
-  def format
+  def select_legislators
     @critters = CongressCritter.find_by_zip(params[:zip])
     @sender = {
       :name => params[:name],
-      :street_address => params[:street],
+      :street_address => params[:street_address],
       :city => params[:city],
       :state => params[:state],
       :zip => params[:zip]
     }
+  end
 
+  def format
+    @critters = params[:critters].map { |x| CongressCritter.find(x) }
+    @sender = {
+      :name => params[:name],
+      :street_address => params[:street_address],
+      :city => params[:city],
+      :state => params[:state],
+      :zip => params[:zip]
+    }
   end
 
   # GET /letters/new

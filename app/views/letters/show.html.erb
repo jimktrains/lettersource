@@ -16,12 +16,12 @@
 <%= button_to 'Duplicate & Edit',  duplicate_letter_path(@letter) %>
 
 <p>
-  <form method="POST" action="<%= format_letter_path %>">
+  <form method="POST" action="<%= select_legislator_letter_path %>">
     <p>Find your Congresspeople and format the letter: </p>
     <label for="name">name</label>
     <input type="text" id="name" name="name">
     <label for="street">street</label>
-    <input type="text" id="street" name="street">
+    <input type="text" id="street" name="street_address">
     <label for="city">city</label>
     <input type="text" id="city" name="city">
     <label for="state">state</label>
