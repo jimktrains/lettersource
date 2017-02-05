@@ -1,0 +1,22 @@
+<% for category in @descendants %>
+<p><a href="<%= category_path category %>"><%=category.display_name %></a></p>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @letters.each do |letter| %>
+      <tr>
+        <td><%= letter.title %></td>
+        <td><%= link_to 'Show', letter %></td>
+        <td><%= link_to 'Edit', edit_letter_path(letter) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,7 +1,7 @@
 require "kramdown"
 
 class LettersController < ApplicationController
-  before_action :set_letter, only: [:show, :edit, :update, :destroy]
+  before_action :set_letter, only: [:show, :edit, :update, :destroy, :duplicate]
 
   # GET /letters
   # GET /letters.json
@@ -37,6 +37,13 @@ class LettersController < ApplicationController
   end
 
   # POST /letters/1/duplicate
+  def duplicate
+    @new_letter = @letter.dup
+    @new_letter.categories = @letter.categories
+    @new_letter.save
+
+    redirect_to edit_letter_path(@new_letter)
+  end
 
   # POST /letters
   # POST /letters.json

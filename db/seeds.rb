@@ -33,8 +33,13 @@ topics = {
     "Tax Reform" => nil,
     "Social Security" => nil,
     "Welfare & Poverty" => nil,
-    "Technology" => nil,
-    "Infrastructure" => nil
+    "Technology" => {
+      "Net Neutrality" => nil
+    },
+    "Infrastructure" => {
+      "Public Transit" => nil,
+      "State-of-Repair" => nil
+    }
   },
 
   "Social Issues" => {
