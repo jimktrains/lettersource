@@ -35,6 +35,8 @@ class LettersController < ApplicationController
       :state => "State",
       :zip => "00000"
     }
+
+    @can_edit = can_edit
   end
 
   def format
@@ -56,15 +58,22 @@ class LettersController < ApplicationController
 
   # GET /letters/1/edit
   def edit
+    redirect_to @letter unless can_edit
   end
 
   # POST /letters/1/duplicate
   def duplicate
     @new_letter = @letter.dup
     @new_letter.categories = @letter.categories
-    @new_letter.save
+    @letter = @new_letter
 
-    redirect_to edit_letter_path(@new_letter)
+    if @letter.save
+      add_letter_to_session
+      redirect_to edit_letter_path(@letter)
+    else
+      format.html { render :new }
+      format.json { render json: @letter.errors, status: :unprocessable_entity }
+    end
   end
 
   # POST /letters
@@ -79,6 +88,7 @@ class LettersController < ApplicationController
 
     respond_to do |format|
       if @letter.save
+        add_letter_to_session
         format.html { redirect_to @letter, notice: 'Letter was successfully created.' }
         format.json { render :show, status: :created, location: @letter }
       else
@@ -91,6 +101,8 @@ class LettersController < ApplicationController
   # PATCH/PUT /letters/1
   # PATCH/PUT /letters/1.json
   def update
+    redirect_to @letter unless can_edit
+
     respond_to do |format|
       if @letter.update(letter_params)
         format.html { redirect_to @letter, notice: 'Letter was successfully updated.' }
@@ -113,6 +125,35 @@ class LettersController < ApplicationController
   #end
 
   private
+    def can_edit
+      unless session[:letters].nil? then
+        if session[:letters].include? @letter.id then
+          return true unless edit_too_old @letter
+          # if we can't edit, we might as well clear it from the session
+          session[:letters].delete_if {|l| l == @letter.id }
+        end
+      end
+      return false
+    end
+
+    def edit_too_old(letter)
+      return letter.created_at + 1.hour < DateTime.now.utc
+    end
+
+    def add_letter_to_session
+      session[:letters] = [] if session[:letters].nil?
+      session[:letters] << @letter.id
+
+      clean_session if session[:letters].length > 100
+    end
+
+    def clean_session
+      session[:letters].delete_if do |l|
+          l = Letter.find(l)
+          return edit_too_old l
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_letter
       @letter = Letter.eager_load(:categories).find(params[:id])
