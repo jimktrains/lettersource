@@ -1,0 +1,60 @@
+<script>
+$(function() {
+  $('#categories').selectize({
+      maxItems: null,
+      mode: 'multi',
+      valueField: 'id',
+      labelField: 'display_name',
+      searchField: 'name',
+      create: false,
+      load: function(query, callback) {
+          if (!query.length) return callback();
+          $.ajax({
+              url: '<%= categories_url(format: :json)%>?q=' + encodeURIComponent(query),
+              type: 'GET',
+              error: function() {
+                  callback();
+              },
+              success: function(res) {
+                  callback(res.slice(0, 10));
+              }
+          });
+      }
+  });
+});
+
+</script>
+
+
+<%= form_for(letter) do |f| %>
+  <% if letter.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(letter.errors.count, "error") %> prohibited this letter from being saved:</h2>
+
+      <ul>
+      <% letter.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </div>
+  <select multiple id="categories" name="letter[categories][]">
+  <% for category in @letter.categories %>
+    <option value="<%= category.id %>" selected><%=category.display_name%></option>
+  <% end %>
+  </select>
+
+  <div class="field">
+    <%= f.label :body %>
+    <%= f.text_area :body %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
