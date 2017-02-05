@@ -41,7 +41,7 @@ class LettersController < ApplicationController
     @critters = CongressCritter.find_by_zip(params[:zip])
     @sender = {
       :name => params[:name],
-      :street => params[:street],
+      :street_address => params[:street],
       :city => params[:city],
       :state => params[:state],
       :zip => params[:zip]
