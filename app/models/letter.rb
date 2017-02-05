@@ -1,3 +1,4 @@
+require 'kramdown' 
 class Letter < ApplicationRecord
   has_and_belongs_to_many :categories
 
@@ -35,4 +36,15 @@ class Letter < ApplicationRecord
                     :tsearch => { :dictionary => 'english' }
                   }
                                   
+
+  def rendered_body
+    # Debating if this should be cached in the db or generated
+    # generated allows me to change the rendering...but how often will that
+    # happen. For testing it'll stay here, but
+    # I probably will end up
+    # @TODO move rendering into `Letter#body=`
+    doc = Kramdown::Document.new(body)
+    rendered_body, warnings = LettersHelper::HTMLConverterWithoutLinks.convert(doc.root)
+    return rendered_body
+  end
 end

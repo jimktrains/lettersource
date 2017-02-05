@@ -1,0 +1,5 @@
+<% @critters.each_with_index do |critter, index| %>
+<div style="<%="page-break-before: always" unless index == 0%>">
+  <%= render 'formatted', letter: @letter, sender: @sender, recipient: critter.recipient_array %>
+</div>
+<% end %>

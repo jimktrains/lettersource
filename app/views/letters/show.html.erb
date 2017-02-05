@@ -15,7 +15,16 @@
 
 <p>
   <form method="POST" action="<%= format_letter_path %>">
-    <label for="search-term">Find your Congresspeople and format the letter: </label>
+    <p>Find your Congresspeople and format the letter: </p>
+    <label for="name">name</label>
+    <input type="text" id="name" name="name">
+    <label for="street">street</label>
+    <input type="text" id="street" name="street">
+    <label for="city">city</label>
+    <input type="text" id="city" name="city">
+    <label for="state">state</label>
+    <input type="text" id="state" name="state">
+    <label for="zip">zip</label>
     <input type="text" id="zip" name="zip">
     <input type="submit" value="Search">
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>

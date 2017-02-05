@@ -2,6 +2,7 @@ require "kramdown"
 
 class LettersController < ApplicationController
   before_action :set_letter, only: [:show, :edit, :update, :duplicate, :format]
+  layout "plain", :only => :format
 
   # GET /letters
   # GET /letters.json
@@ -18,13 +19,6 @@ class LettersController < ApplicationController
   # GET /letters/1
   # GET /letters/1.json
   def show
-    # Debating if this should be cached in the db or generated
-    # generated allows me to change the rendering...but how often will that
-    # happen. For testing it'll stay here, but
-    # I probably will end up
-    # @TODO move rendering into `Letter#body=`
-    doc = Kramdown::Document.new(@letter.body)
-    @letter.rendered_body, @warnings = LettersHelper::HTMLConverterWithoutLinks.convert(doc.root)
 
     @sender = {
       :name => "Sender's Name",
@@ -44,9 +38,15 @@ class LettersController < ApplicationController
   end
 
   def format
-    z = Zip2cd.where(zipcode: params[:zip])
-    require 'pp'
-    pp z
+    @critters = CongressCritter.find_by_zip(params[:zip])
+    @sender = {
+      :name => params[:name],
+      :street => params[:street],
+      :city => params[:city],
+      :state => params[:state],
+      :zip => params[:zip]
+    }
+
   end
 
   # GET /letters/new
