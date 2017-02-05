@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205040001) do
+ActiveRecord::Schema.define(version: 20170205051655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,12 @@ ActiveRecord::Schema.define(version: 20170205040001) do
   create_table "zip2cd", primary_key: "zcta5", id: :text, force: :cascade do |t|
     t.text "state", array: true
     t.text "cd",    array: true
+  end
+
+  create_table "zip2cds", id: false, force: :cascade do |t|
+    t.string "zipcode", limit: 5
+    t.string "states",            array: true
+    t.string "cds",               array: true
   end
 
 end
