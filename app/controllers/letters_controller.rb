@@ -104,13 +104,13 @@ class LettersController < ApplicationController
 
   # DELETE /letters/1
   # DELETE /letters/1.json
-  def destroy
-    @letter.destroy
-    respond_to do |format|
-      format.html { redirect_to letters_url, notice: 'Letter was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
+  #def destroy
+  #  @letter.destroy
+  #  respond_to do |format|
+  #    format.html { redirect_to letters_url, notice: 'Letter was successfully destroyed.' }
+  #    format.json { head :no_content }
+  #  end
+  #end
 
   private
     # Use callbacks to share common setup or constraints between actions.
