@@ -49,11 +49,42 @@ EOS
       q = conn.prepare("get_category_desc_letters", all_letter_query)
     rescue PG::DuplicatePstatement 
     end
-    letterss = conn.exec_prepared("get_category_desc_letters",  [self.id])
+    letterss = conn.query("get_category_desc_letters",  [self.id])
     letters = []
     for letter in letterss
       letters << Letter.new(letter)
     end
     return letters
+  end
+
+  def self.search_with_alias(term)
+    query = <<eos
+select categories.*
+from categories
+left join categories_aliases
+  on path = categories_id
+where name ilike $1
+  or alias ilike $1
+eos
+
+    conn = ActiveRecord::Base.connection.raw_connection
+    categories_raw = conn.query(query, ["%" + term + "%"])
+    return categories_raw.map { |c| Category.new(c) }
+  end
+
+  # yes, this is ineffeiecnt since we can't load them all for all results in a
+  # single query
+  def aliases
+    query = <<eos
+select alias
+from categories
+inner join categories_aliases
+  on path = categories_id
+where path = $1
+eos
+
+    conn = ActiveRecord::Base.connection.raw_connection
+    categories_raw = conn.query(query, [self.path])
+    return categories_raw.map { |c| c['alias'] }
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170208203553) do
+ActiveRecord::Schema.define(version: 20170209214937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,14 @@ ActiveRecord::Schema.define(version: 20170208203553) do
     t.ltree    "path",         null: false
     t.text     "display_name"
     t.index "name gin_trgm_ops", name: "categories_name_trgm", using: :gin
+    t.index ["path"], name: "categories_path_unique", unique: true, using: :btree
     t.index ["path"], name: "index_categories_on_path", using: :gist
+  end
+
+  create_table "categories_aliases", primary_key: ["categories_id", "alias"], force: :cascade do |t|
+    t.text  "alias",         null: false
+    t.ltree "categories_id", null: false
+    t.index "alias gin_trgm_ops", name: "categories_alias_trgm", using: :gin
   end
 
   create_table "categories_letters", id: false, force: :cascade do |t|
@@ -50,10 +57,12 @@ ActiveRecord::Schema.define(version: 20170208203553) do
     t.index "((setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(body, ''::text)), 'B'::\"char\")))", name: "letters_body_ftidx", using: :gin
   end
 
-  create_table "statefips", primary_key: "state", id: :text, force: :cascade do |t|
+  create_table "statefips", id: false, force: :cascade do |t|
+    t.text "state",      null: false
     t.text "stusab"
     t.text "state_name"
     t.text "statens"
+    t.index ["state"], name: "statefips_state_unique", unique: true, using: :btree
     t.index ["stusab"], name: "index_statefips_on_stusab", using: :btree
   end
 
@@ -64,4 +73,5 @@ ActiveRecord::Schema.define(version: 20170208203553) do
     t.index ["zcta5"], name: "zip2cds_zcta5_idx", using: :gin
   end
 
+  add_foreign_key "categories_aliases", "categories", column: "categories_id", primary_key: "path", name: "categories_aliases_categories_id_fkey"
 end

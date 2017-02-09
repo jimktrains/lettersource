@@ -10,52 +10,70 @@
 
 topics = {
   "International Issues" => {
-    "Foreign Policy" => nil,
-    "Homeland Security" => nil,
-    "War & Peace" => nil,
-    "Free Trade" => nil,
-    "Immigration" => nil,
-    "Energy & Oil" => nil
+    "topics" => {
+      "Foreign Policy" => nil,
+      "Homeland Security" => nil,
+      "War & Peace" => nil,
+      "Free Trade" => nil,
+      "Immigration" => nil,
+      "Energy & Oil" => nil
+    }
   },
 
   "Domestic Issues" => {
-    "Gun Control" => nil,
-    "Crime" => nil,
-    "Drugs" => nil,
-    "Civil Rights" => nil,
-    "Jobs" => nil,
-    "Environment" => nil
+    "topics" => {
+      "Gun Control" => nil,
+      "Crime" => nil,
+      "Drugs" => nil,
+      "Civil Rights" => nil,
+      "Jobs" => nil,
+      "Environment" => nil
+    }
   },
 
   "Economic Issues" => {
-    "Budget & Economy" => nil,
-    "Government Reform" => nil,
-    "Tax Reform" => nil,
-    "Social Security" => nil,
-    "Welfare & Poverty" => nil,
-    "Technology" => {
-      "Net Neutrality" => nil
-    },
-    "Infrastructure" => {
-      "Public Transit" => nil,
-      "State-of-Repair" => nil
+    "topics" => {
+      "Budget & Economy" => nil,
+      "Government Reform" => nil,
+      "Tax Reform" => nil,
+      "Social Security" => nil,
+      "Welfare & Poverty" => nil,
+      "Technology" => {
+        "topics" => {
+          "Net Neutrality" => nil
+        }
+      },
+      "Infrastructure" => {
+        "topics" => {
+          "Public Transit" => nil,
+          "State-of-Repair" => nil
+        }
+      }
     }
   },
 
   "Social Issues" => {
-    "Education" => {
-      "Public K-12" => nil,
-      "Public Universities" => nil
-    },
-    "Health Care" => {
-      "Affordable Care Act" => nil,
-      "Medicare" => nil
-    },
-    "Abortion" => nil,
-    "LGBQT" => nil,
-    "Families & Children" => nil,
-    "Corporations" => nil,
-    "Principles & Values" => nil
+    "topics" => {
+      "Education" => {
+        "topics" => {
+          "Public K-12" => nil,
+          "Public Universities" => nil
+        }
+      },
+      "Health Care" => {
+        "topics" => {
+          "Affordable Care Act" => {
+            "aliases" => ["Obamacare"]
+          },
+          "Medicare" => nil
+        }
+      },
+      "Abortion" => nil,
+      "LGBQT" => nil,
+      "Families & Children" => nil,
+      "Corporations" => nil,
+      "Principles & Values" => nil
+    }
   }
 }
 
@@ -63,7 +81,12 @@ def clean_path_part(x)
   x.gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_')
 end
 
-def handle_topic(topics, prefix=nil, display_prefix=nil)
+conn = ActiveRecord::Base.connection.raw_connection
+
+def handle_topic(topics, prefix=nil, display_prefix=nil, conn=nil)
+  return if topics.nil?
+  conn = ActiveRecord::Base.connection.raw_connection if conn.nil?
+
   if prefix.nil? then
     prefix = ""
   else
@@ -81,18 +104,20 @@ def handle_topic(topics, prefix=nil, display_prefix=nil)
     this_prefix = prefix + clean_path_part(k)
     this_display_name = display_prefix  + k
     cat = Category.where(path: this_prefix).first
-    if cat.path.nil? then
-      Category.create(name: k, path: this_prefix, display_name: this_display_name, public: true)
+    if cat.nil? or cat.path.nil? then
+      cat = Category.create(name: k, path: this_prefix, display_name: this_display_name, public: true)
     else
-      cat.name = k
-      cat.path = this_prefix
-      cat.display_name = this_display_name
-      cat.public = true
-      cat.save
+      cat.update(name: k, path: this_prefix, display_name: this_display_name, public: true)
     end
-    if v.is_a? Hash then
-      handle_topic(v, this_prefix, this_display_name)
+
+    unless v.nil? or v['aliases'].nil? then
+      v['aliases'].each do |a|
+        #conn.query("INSERT INTO categories_aliases (alias, categories_id) VALUES ('" + a + "', '" + cat.path + "') ON CONFLICT DO NOTHING")
+        conn.query("INSERT INTO categories_aliases (alias, categories_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [a, cat.path])
+      end
     end
+
+    handle_topic(v["topics"], this_prefix, this_display_name, conn) unless v.nil?
   end
 end
 
@@ -100,7 +125,6 @@ Rails.logger.debug("importing topics")
 puts "importing topics"
 handle_topic(topics)
 
-conn = ActiveRecord::Base.connection.raw_connection
 
 Rails.logger.debug("importing zips")
 puts "importing zips"
