@@ -4,10 +4,12 @@ class CongressCritter < ApplicationRecord
 select congress_critters.* 
 from congress_critters 
 inner join zip2cds 
-  on (position = 'REP' and ARRAY[cd_fips]::varchar[] <@ cds) 
+  on (position = 'REP' and cd_fips = cd) 
       or
-     (position = 'SEN' AND array[state_fips]::varchar[] <@ states) 
-where zipcode = $1
+     (position = 'SEN' AND state_fips = zip2cds.state) 
+where zcta5 @> ARRAY[$1]
+group by
+  congress_critters.govtrack_id;
 EOS
     conn = ActiveRecord::Base.connection.raw_connection
     begin
@@ -16,7 +18,7 @@ EOS
     rescue PG::DuplicatePstatement 
     end
     critters_raw = conn.exec_prepared("get_legislator_for_zip",  [zip])
-    critters = critters_raw.map {|critter| CongressCritter.new(critter) }
+    critters = critters_raw.map {|critter|  CongressCritter.new(critter) }
     return critters
 
   end

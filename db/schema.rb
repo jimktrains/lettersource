@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205223057) do
+ActiveRecord::Schema.define(version: 20170208203553) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,9 +57,11 @@ ActiveRecord::Schema.define(version: 20170205223057) do
     t.index ["stusab"], name: "index_statefips_on_stusab", using: :btree
   end
 
-  create_table "zip2cds", primary_key: "zipcode", id: :string, limit: 5, force: :cascade do |t|
-    t.string "states", array: true
-    t.string "cds",    array: true
+  create_table "zip2cds", primary_key: "cd", id: :text, force: :cascade do |t|
+    t.text "zcta5",              array: true
+    t.text "state", null: false
+    t.index ["state"], name: "zip2cds_state_idx", using: :btree
+    t.index ["zcta5"], name: "zip2cds_zcta5_idx", using: :gin
   end
 
 end

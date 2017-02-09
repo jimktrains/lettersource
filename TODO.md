@@ -1,7 +1,6 @@
 # v1
 * Better formatting for print interface 
 * PDF download (stretch goal?)
-* Some form of spam detection e.g. akismet
 * Alias categories e.g. Obamacare -> ACA -> Affordable Care Act
 * Have letters for specific states, congressional districts, &c
 
