@@ -115,6 +115,9 @@ begin
     end
     q += line
   end
+  if q != "" then
+      conn.query q
+  end
 rescue PG::UniqueViolation => e
   puts e
   Rails.logger.error(e)
