@@ -21,6 +21,35 @@ $(function() {
           });
       }
   });
+
+  $('#districts').selectize({
+      maxItems: null,
+      mode: 'multi',
+      valueField: 'id',
+      labelField: 'name',
+      searchField: ['name', 'one_zip'],
+      optgroupLabelField: 'type',
+      optgroupField: 'type',
+      create: false,
+      load: function(query, callback) {
+          var self = this;
+          if (!query.length) return callback();
+          $.ajax({
+              url: '<%= districts_url(format: :json)%>?zip=' + encodeURIComponent(query),
+              type: 'GET',
+              error: function() {
+                  callback();
+              },
+              success: function(res) {
+                  $.each(res, function(index, value) {
+                    self.addOptionGroup(value['type'], value);
+                  });
+                  self.refreshOptions();
+                  callback(res.slice(0, 10));
+              }
+          });
+      }
+  });
 });
 
 </script>
@@ -43,16 +72,23 @@ $(function() {
     <%= f.label :title %>
     <%= f.text_field :title %>
   </div>
+  <label for="categories">Topics:
   <select multiple id="categories" name="letter[categories][]">
   <% for category in @letter.categories %>
     <option value="<%= category.id %>" selected><%=category.display_name%></option>
   <% end %>
   </select>
+  </label>
 
   <div class="field">
     <%= f.label :body %>
     <%= f.text_area :body %>
   </div>
+
+  <label for="districts"> Applicable Districts (leave blank for general letters)(enter your zip to show relevant districts)
+  <select multiple id="districts" name="letter[districts][]">
+  </select>
+  </label>
 
   <div class="actions">
     <%= f.submit %>

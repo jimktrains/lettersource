@@ -20,7 +20,7 @@
     <% @letters.each do |letter| %>
       <tr>
         <td><%= letter.title %></td>
-        <td><%= link_to 'Show', letter %></td>
+        <td><%= link_to 'Show', letter_path(letter) %></td>
         <td><%= link_to 'Edit', edit_letter_path(letter) %></td>
       </tr>
     <% end %>

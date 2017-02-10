@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170209214937) do
+ActiveRecord::Schema.define(version: 20170210035413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,18 @@ ActiveRecord::Schema.define(version: 20170209214937) do
     t.index "((setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(body, ''::text)), 'B'::\"char\")))", name: "letters_body_ftidx", using: :gin
   end
 
+  create_table "letters_hofr", primary_key: ["letter_id", "cd"], force: :cascade do |t|
+    t.integer "letter_id", null: false
+    t.text    "cd",        null: false
+    t.index ["cd"], name: "letters_hofr_cd_idx", using: :btree
+  end
+
+  create_table "letters_senate", primary_key: ["letter_id", "state"], force: :cascade do |t|
+    t.integer "letter_id", null: false
+    t.text    "state",     null: false
+    t.index ["state"], name: "letters_senate_state_pk", using: :btree
+  end
+
   create_table "statefips", id: false, force: :cascade do |t|
     t.text "state",      null: false
     t.text "stusab"
@@ -74,4 +86,8 @@ ActiveRecord::Schema.define(version: 20170209214937) do
   end
 
   add_foreign_key "categories_aliases", "categories", column: "categories_id", primary_key: "path", name: "categories_aliases_categories_id_fkey"
+  add_foreign_key "letters_hofr", "letters", name: "letters_hofr_letter_id_fkey"
+  add_foreign_key "letters_hofr", "zip2cds", column: "cd", primary_key: "cd", name: "letters_hofr_cd_fkey"
+  add_foreign_key "letters_senate", "letters", name: "letters_senate_letter_id_fkey"
+  add_foreign_key "letters_senate", "statefips", column: "state", primary_key: "state", name: "letters_senate_state_fkey"
 end

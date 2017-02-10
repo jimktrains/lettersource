@@ -8,8 +8,11 @@ class LettersController < ApplicationController
   # GET /letters.json
   def index
     @search_term = params['q']
+    @zip = params['zip']
     if @search_term then
       @letters = Letter.search_full_text(@search_term)
+    elsif @zip then
+      @letters = Letter.find_by_zip(@zip)
     else
       @letters = Letter.all
     end
