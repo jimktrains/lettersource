@@ -63,7 +63,10 @@ topics = {
       "Health Care" => {
         "topics" => {
           "Affordable Care Act" => {
-            "aliases" => ["Obamacare"]
+            "aliases" => [
+              "Obamacare",
+              "ACA"
+            ]
           },
           "Medicare" => nil
         }

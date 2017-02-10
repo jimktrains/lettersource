@@ -1,7 +1,6 @@
 # v1
 * Better formatting for print interface 
 * PDF download (stretch goal?)
-* Alias categories e.g. Obamacare -> ACA -> Affordable Care Act
 * Have letters for specific states, congressional districts, &c
 
 # v1.5
