@@ -1,10 +1,11 @@
 # v1
 * Better formatting for print interface 
-* PDF download (stretch goal?)
 * Have letters for specific states, congressional districts, &c
+* Gussy it up
 
 # v1.5
 * Allow people to contribute categories, but don't make them public until OKed
+* PDF download
 
 # v2
 * Add in county and municipality layers
